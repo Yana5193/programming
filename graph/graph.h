@@ -1,12 +1,17 @@
 #pragma once
 #include <string>
 #include <set>
+#include <vector>
 class Node;
 typedef std::set<Node*>::const_iterator
 node_iterator;
 class Graph {
 	std::set<Node*> nodes;
 public:
+	Graph() {}
+	Graph(const std::string& fileName); // Конструктор из файла 
+	~Graph(); 
+
 	void addNode(Node* node);
 	void removeNode(Node* node);
 	void addEdge(Node* begin, Node* end);
@@ -23,8 +28,8 @@ public:
  Node(const std::string& aname) : name(aname) {}
  const std::string& getName() const { return name; }
  node_iterator nb_begin() const {return neighbours.begin();}
-node_iterator nb_end() const { return neighbours.end(); }
-friend class Graph;
+ node_iterator nb_end() const { return neighbours.end(); }
+ friend class Graph;
 };
 class BFS {
 	const Graph& graph;

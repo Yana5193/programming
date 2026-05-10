@@ -1,12 +1,51 @@
 ﻿#include "Graph.h"
+#include <fstream>
+#include <sstream>
+#include <map>
 #include <queue>
+#include <iostream>
 void Node::addNeighbour(Node* neighbour) {
 	if (neighbour) neighbours.insert(neighbour);
 }
 void Node::removeNeighbour(Node* neighbour) {
 	neighbours.erase(neighbour);
 }
+Graph::Graph(const std::string& fileName) {
+	std::ifstream file(fileName);
+	if (!file.is_open()) {
+		std::cout << "[ОШИБКА] Не удалось открыть файл: " << fileName << std::endl;
+		return;
+	}
 
+	std::string line;
+	std::getline(file, line); 
+
+	while (std::getline(file, line)) {
+		if (line.empty()) continue;
+
+		std::stringstream ss(line);
+		std::string u_name, v_name;
+		if (ss >> u_name >> v_name) {
+			static std::map<std::string, Node*> nameToNode;
+			auto getNode = [&](const std::string& name) {
+				for (Node* n : nodes) {
+					if (n->getName() == name) return n;
+				}
+				Node* newNode = new Node(name);
+				addNode(newNode);
+				return newNode;
+				};
+
+			Node* u = getNode(u_name);
+			Node* v = getNode(v_name);
+			addEdge(u, v);
+		}
+	}
+	file.close();
+}
+Graph::~Graph() {
+	for (Node* n : nodes) delete n;
+}
 void Graph::removeNode(Node* node) {
 	nodes.erase(node);
 	for (std::set<Node*>::iterator it = nodes.begin();
